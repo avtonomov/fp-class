@@ -160,12 +160,14 @@ bothTrue _  _ = False
 -- д) Функция, возвращающая True, если только один из её аргументов равен True,
 -- и False в противном случае (пользоваться стандартными логическими операциями не следует).
 oneTrue :: Bool -> Bool -> Bool
-oneTrue = undefined
+oneTrue True False = True
+oneTrue False True = True
+oneTrue _ _ = False
 
 -- е) Дана температура в градусах Фаренгейта. Вычислить соответствующую температуру
 -- в градусах Цельсия.
 f2c :: Double -> Double
-f2c = undefined
+f2c a = -32 * 5/9
 
 {-
    ж) Найти наибольший общий делитель двух целых чисел, пользуясь
@@ -173,13 +175,21 @@ f2c = undefined
       НОД(a, b) = НОД(b, a mod b), если b ≠ 0; 
       НОД(a, 0) = a.
 -}
--- gcd' :: ???
-gcd' = undefined
+gcd' :: Integer -> Integer->Integer
+gcd' a 0 = a
+gcd' a b = gcd' b (a `mod` b)
 
 -- з) Функция, возвращающая название дня недели по его номеру (от 1 до 7),
 --    если номер неправильный, генерируется исключение (функция error).
 dayOfWeek :: Int -> String
-dayOfWeek = undefined
+dayOfWeek 1 = "Понедельник"
+dayOfWeek 2 = "Вторник"
+dayOfWeek 3 = "Среда"
+dayOfWeek 4 = "Четверг"
+dayOfWeek 5 = "Пятница"
+dayOfWeek 6 = "Суббота"
+dayOfWeek 7 = "Воскресенье"
+dayOfWeek _ = error "нет такого"
 
 
 -- Далее типовые аннотации, если их нет, следует писать самостоятельно.
@@ -201,12 +211,22 @@ sign a
           4,    если x ≥ 2.
 -}
 
-eval_f = undefined
+eval_f :: Integer-> Integer
+eval_f a
+   | a <= 0 = -1 * a
+   | a > 0 && a < 2 = a^2
+   | otherwise = 4
+
+
 
 -- б) Написать функцию, возвращающую текстовую характеристику ("hot", "warm", "cool", "cold")
 -- по заданному значению температуры в градусах Цельсия.
 describeTemperature :: Double -> String
-describeTemperature = undefined
+describeTemperature a
+   | a < (-20) = "cold" 
+   | a < 0 && a >(-20)  = "cool"
+   | a > 0 && a < 20 = "warm"
+   | otherwise = "hot"
 
 {- 
    в) (*) Дан список температур в градусах Фаренгейта. Вывести для каждого значения
@@ -214,6 +234,7 @@ describeTemperature = undefined
 
   Решение:
 > map (describeTemperature . f2c) [82, 94, 50, 65, 34]
+["cool","cool","cool","cool","cool"]
 
   В этом решении с помощью операции (.) строится композиция (суперпозиция) функций
   и получившаяся функция применяется функцией map к каждому элементу списка.
@@ -227,9 +248,11 @@ sum_n n
   | n > 1 = n + sum_n (n-1)
   | otherwise = error "n should be >= 1"
 
--- а) Вычислить сумму всех целых чисел от a до b включительно.
-sum_ab = undefined
+-- а) Вычислить сумму всех целых чисел от a до b включительно
 
+sum_ab  a b
+  | a < b = n + sum_ab(a+1)
+  | otherwise = n
 {-
    б) Числовая последовательность определяется следующим образом:
       a1 = 1, a2 = 2, a3 = 3, a_k = a_{k−1} + a_{k−2} − 2*a_{k−3}, k = 4, 5, ...
