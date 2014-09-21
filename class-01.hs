@@ -49,6 +49,9 @@ avg3 :: Double -> Double -> Double -> Double
 avg3 a b c = (a + b + c)/3
 
 {-
+   После определения функции avg3 этот файл следует перезагрузить. Для этого в ghci необходимо выполнить
+   команду :reload (или :r).
+
    Результаты проверки:
     (3+5+7)/3 = 5
     (3+10+3)/3 = 5.333
@@ -119,10 +122,15 @@ avg3 a b c = (a + b + c)/3
 -- 5) Объявление функций (2)
 
 -- а) Удвоение значения заданного числа
+
 -- (объясните смысл типовой аннотации: ???)
 
 --типовая аннотоция означает, что выражение double(т.е выходной параметр функции) имеет тип "a", где уже "a" 
   -- принадлежит классу типов Num
+
+
+-- (типовая аннотация здесь означает, что функция принимает один параметр типа a и возвращает значение
+--  типа a, причём тип a принадлежит классу типов Num)
 
 double :: Num a => a -> a
 double a = a * 2
@@ -172,8 +180,8 @@ f2c a = -32 * 5/9
 {-
    ж) Найти наибольший общий делитель двух целых чисел, пользуясь
       алгоритмом Евклида (псевдокод):
-      НОД(a, b) = НОД(b, a mod b), если b ≠ 0; 
       НОД(a, 0) = a.
+      НОД(a, b) = НОД(b, a mod b), если b ≠ 0; 
 -}
 gcd' :: Integer -> Integer->Integer
 gcd' a 0 = a
@@ -181,6 +189,7 @@ gcd' a b = gcd' b (a `mod` b)
 
 -- з) Функция, возвращающая название дня недели по его номеру (от 1 до 7),
 --    если номер неправильный, генерируется исключение (функция error).
+--    В реализации следует пользоваться сопоставлением с образцами.
 dayOfWeek :: Int -> String
 dayOfWeek 1 = "Понедельник"
 dayOfWeek 2 = "Вторник"
@@ -247,37 +256,60 @@ sum_n 1 = 1
 sum_n n
   | n > 1 = n + sum_n (n-1)
   | otherwise = error "n should be >= 1"
+  
+  
+  
 
 -- а) Вычислить сумму всех целых чисел от a до b включительно
+sum_ab a b
+  | a == b = b
+  | otherwise = a + sum_ab (a+1) b
 
-sum_ab  a b
-  | a < b = n + sum_ab(a+1)
-  | otherwise = "gh"
 {-
    б) Числовая последовательность определяется следующим образом:
       a1 = 1, a2 = 2, a3 = 3, a_k = a_{k−1} + a_{k−2} − 2*a_{k−3}, k = 4, 5, ...
       Вычислить её n-й элемент.
 -}
-eval_a_n = undefined
+eval_a_n 1= 1
+eval_a_n 2= 2
+eval_a_n 3= 3
+eval_a_n n
+   | n>3 = eval_a_n (n-1) + eval_a_n (n-2) - 2 * eval_a_n (n-3)
+   | otherwise = error "error"
+   
+   -- в) Вычислить, пользуясь рекурсией, n-ю степень числа a (n - целое):
 
--- в) Вычислить, пользуясь рекурсией, n-ю степень числа a (n - целое):
-pow = undefined
+pow a 0 = 1
+pow a n
+  | n > 0  = a * pow a (n-1)
+  | otherwise = error "error"
 
 -- г) Пользуясь ранее написанной функцией pow, вычислить сумму: 1^k + 2^k + ... + n^k.
-sum_nk = undefined
 
+sum_nk 1 k = 1
+sum_nk n k
+  | n > 1 = pow n k + sum_nk (n-1) k
+  | otherwise = error "error"
 -- д) Сумма факториалов чисел от 1 до n.
 sum_fact 1 = 1
-sum_fact n = undefined
+sum_fact n = fact n + sum_fact (n-1)
   where
-    fact n = undefined
-
+    fact 1 = 1
+    fact n 
+	  | n>1 = n* fact (n-1)
 -- е) Количество цифр целого числа
-number_digits = undefined
 
+number_digits n 
+  | (n< 10) = 1
+  |  n >=10 = 1+ number_digits (n `div` 10)
+  | otherwise = error "error"
 -- ж) Проверить, является ли заданное число простым.
-isPrime = undefined
-
+isPrime_ n 1 = True
+isPrime_ n a
+  | n `mod` a == 0 = False
+  |otherwise = isPrime_ n (a-1)
+  
+isPrime n = isPrime_ n (n-1)
 -- 8) Разное
 
 {-
@@ -288,6 +320,12 @@ isPrime = undefined
   а 1200 и 2000 — являются).
 -}
 
-nDays year = undefined
+
+nDays year
+ |isLeap year == True =366
+ |otherwise = 365
   where
-    isLeap = undefined
+   isLeap n 
+	 | n `mod` 100 ==0 && n `mod` 400 /=0 = False
+     | n `mod` 4 ==0 = True
+	 |otherwise = False
