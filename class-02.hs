@@ -123,16 +123,75 @@ task_2_8 a (x:xs) = x:a:task_2_8 a xs
 -- совпадающие с первым элементом, и все остальные элементы, например:
 -- [1,1,1,2,3,1] -> ([1,1,1], [2,3,1]).
 
-task_2_9 [] = ([],[])
-task_2_9 (x:xs) = (x:task_2_9 xs ,2)
+
+
 --3
+
+
+
 -- Даны типовые аннотации функций. Попытайтесь догадаться, что они делают, и напишите их
 -- рекурсивные реализации (если вы можете предложить несколько вариантов, реализуйте все):
 -- а) [a] -> Int -> a
+
+
+find_ (x:xs) i
+     |i>0 = find_ xs (i-1)
+     |otherwise = x
+
+
 -- б) Eq a => [a] -> a -> Bool
+
+find_a [] _ = False
+find_a (x:xs) a
+     |a == x = True
+     |otherwise = find_a xs a
+
 -- в) [a] -> Int -> [a]
+
+-- возвращение n первых элементов массива
+ret (xs) ii = retu_rn xs 0
+  where
+   retu_rn (xs)  i 
+     |i<=ii = (find_ (xs) (i)) : retu_rn (xs) (i+1) 
+     | otherwise = []
+
+
+
+
+
 -- г) a -> Int -> [a]
--- д) [a] -> [a] -> [a]
+-- дублирование i раз эдемента а
+dublicate a i 
+  |i>0 = a:dublicate a (i-1)
+  |otherwise = []
+-- д)[a] -> [a] -> [a]
+
+--сумма двух списков
+--combine_plus [] ys = ys
+--combine_plus xs [] = xs
+--combine_plus (x:xs) (y:ys) = x+y : combine_plus xs ys
+
+--разность двух списков
+combine_min [] ys = []
+combine_min xs [] = []
+combine_min (x:xs) (y:ys) = (x-y) : combine_min xs ys
+
+
+
 -- е) Eq a => [a] -> [[a]]
+
+
 -- ж) [a] -> [(Int, a)]
+
+-- инжексирование элементов массива
+index_mass mass = numb_ 0 mass
+   where
+       numb_ _ [] = []
+       numb_ i (y:ys) = (i,y): numb_ (i+1) (ys)
+
 -- з) Eq a => [a] -> [a]
+-- сравнение двух массивов на равенство
+equal_mas [] [] = True
+equal_mas (x:xs) (y:ys) 
+  |x ==y = equal_mas (xs) (ys)
+  |otherwise = False  
