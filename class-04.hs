@@ -16,6 +16,8 @@
 {-
  1. Простейшие функции обработки списков
   a) Найти сумму чётных элементов списка с целочисленными элементами.
+
+
   b) Найти сумму и произведение элементов списка вещественных чисел.
   с) Найти среднее арифметическое элементов списка вещественных чисел (функцией length пользоваться нельзя,
      решение должно выполняться в один проход).
@@ -23,6 +25,59 @@
   e) Найти наименьший нечётный элемент списка с целочисленными значениями (дополнительным параметром
      функции должно быть значение, возвращаемое по умолчанию).
 -}
+
+
+foldl_ _ z [ ] = z
+foldl_ f z (x:xs) = foldl_ f (f z x) xs
+
+
+
+
+
+foldr_ _ z [ ] = z
+foldr_ f z (x:xs) = f x (foldr_ f z xs)
+
+task_1_a = foldl_ (\c x -> c + if even x then x else 0) 0
+
+task_1_a_test1 = task_1_a [1..5] ==6
+task_1_a_test2 = task_1_a [] == 0
+task_1_a_test3 = task_1_a [1000..1005]==3006
+
+--task_b
+task_1_b = foldl_ (\(s,p) x -> (s+x, p*x)) (0.0, 1.0)
+
+
+task_1_b_test1 = task_1_b [1.2] ==(1.2,1.2)
+task_1_b_test2 = task_1_b [1.5, 2.5, 3.5, -3.5]==(-4.0,45.9375)
+task_1_b_test3 = task_1_b []==(0,1)
+
+
+--task_c
+task_1_c xs = (fst dat) / (snd dat) 
+      where dat  =  foldl_ (\(s,len) x -> (s+x, 1+len)) (0.0, 0) xs
+
+
+task_1_c_test1 = task_1_c [1.2] ==1.2
+task_1_c_test2 = task_1_c [1.5, 2.5, 3.5, -3.5] ==1.0
+task_1_c_test3 = task_1_c [0] == 0
+
+
+--task_d
+task_1_d xs = foldl1 min xs
+
+task_1_d_test1 = task_1_d [1.2] ==1.2
+task_1_d_test2 = task_1_d [1.5, 2.5, 3.5, -3.5] == -3.5
+task_1_d_test3 = task_1_d [0] == 0
+
+
+--task_e
+temp xs = (foldl_(\c x -> if odd x then c++[x] else c) [] xs )
+
+task_1_e xs p =  if  (temp xs == [] )then p else (foldl1 min (temp (xs)))
+
+task_1_e_test1 = task_1_e [1] 2 ==1
+task_1_e_test2 = task_1_e [1, 2, 3, -3]  3 == -3
+task_1_e_test3 = task_1_e [2,4] 1 == 1
 
 {-
  2. Свёртки, формирующие списки
@@ -42,6 +97,66 @@
      заданной функции двух аргументов к соответствующим элементам исходных списков.
 -}
 
+--task_a
+task_2_a = fst. foldl_(\(c,n) x -> if odd n then (c++[x],n+1) else (c,n+1))  ([],0)
+
+task_2_a_test1 = task_2_a [1,2] ==[2]
+task_2_a_test2 = task_2_a [1, 2, 3, -3] == [2,-3]
+task_2_a_test3 = task_2_a [2] == []
+
+--task_b
+task_2_b n = fst. foldl_(\(c,nn) x -> if nn >0 then (c++[x],nn-1) else (c,nn))  ([],n)
+
+task_2_b_test1 = task_2_b  0 [1,2] ==[]
+task_2_b_test2 = task_2_b  2 [1, 2, 3, -3]  == [1,2]
+task_2_b_test3 = task_2_b  5 [2]== [2]
+
+
+
+--task_c
+reverse_ = foldl (\acc x -> x : acc) [ ]
+task_2_c xs n = reverse_ $ task_2_b n (reverse_ (xs))
+
+
+task_2_c_test1 = task_2_c [1,2] 0  ==[]
+task_2_c_test2 = task_2_c [1, 2, 3, -3] 2   == [3,-3]
+task_2_c_test3 = task_2_c  [2]  5 == [2]
+
+
+--task_d
+task_2_d (x:xs) = fst (foldl_ (\(c,s) xx -> if xx > s then (c++[xx],xx) else (c,xx)) ([], x) xs)
+
+task_2_d_test1 = task_2_d [1,2]  ==[2]
+task_2_d_test2 = task_2_d [1, 2, 3, -3]   == [2,3]
+task_2_d_test3 = task_2_d  [2]  ==[]
+
+
+foldl_1 _ z [ ] [ ] = 0
+foldl_1 f z (x:xs) (y:ys) = foldl_1 f (f y x) (xs) (ys)
+
+
+
+
+
+
+--task_m
+
+task_2_m (x:xs) = fst (foldl_ (\(c,s) xx -> if xx /= s then (c++[xx],xx) else (c,xx)) ([x], x) xs)
+
+task_2_m_test1 = task_2_m [1,2]  ==[1,2]
+task_2_m_test2 = task_2_m [1, 2, 3, 3]   == [1,2,3]
+task_2_m_test3 = task_2_m  [2,2,2,2,1,2]  ==[2,1,2]
+
+--task_n
+
+task_n f xs ys = snd $ foldl_ temp_n (xs,[]) ys
+   where
+       temp_n (t:ts,acc) y = (ts, acc++[(f t y)])
+
+task_2_n_test1 = task_n (+) [1,2] [2,3] ==[3,5]
+task_2_n_test2 = task_n (*) [1,2] [2,3]   == [2,6]
+task_2_n_test3 = task_n  (+) [] []  == []       
+
 {-
  3. Использование свёртки как носителя рекурсии (для запуска свёртки можно использовать список типа [1..n]).
   a) Найти сумму чисел от a до b.
@@ -51,6 +166,40 @@
      n слагаемых).
   e) Проверить, является ли заданное целое число простым.
 -}
+
+--task_a
+task_3_a a b = foldr (\acc x -> acc + x ) 0 [a..b]
+
+task_3_a_test1 = task_3_a 0 0  ==0
+task_3_a_test2 = task_3_a  1 5 == 15
+task_3_a_test3 = task_3_a  (-1)  1== 0
+
+
+--task_b
+task_3_b a b = fst (foldl (\(summ,fact) x -> (summ+fact*x,fact*x)) (0,1) [a..b])
+
+task_3_b_test1 = task_3_b 0 0  ==0
+task_3_b_test2 = task_3_b  1 5 ==153
+task_3_b_test3 = task_3_b  1 3 == 9
+
+
+--task_c
+fib = 1:scanl (+) 1 fib
+
+task_3_c n = take n fib
+
+task_3_c_test1 = task_3_c 0 ==[]
+task_3_c_test2 = task_3_c 5 == [1,1,2,3,5]
+task_3_c_test3 = task_3_c 2 == [1,1]
+
+
+--task_e
+task_3_e n = foldl (\acc x ->  ( n `mod` x /= 0) && acc) True [2..n-1]
+
+task_3_e_test1 = task_3_e 1 == True
+task_3_e_test2 = task_3_e 5 == True
+task_3_e_test3 = task_3_e 6 == False
+
 
 {-
  4. Решить задачу о поиске пути с максимальной суммой в треугольнике (см. лекцию 3) при условии,
