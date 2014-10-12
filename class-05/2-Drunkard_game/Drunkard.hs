@@ -7,16 +7,16 @@ module Drunkard where
   учитывая, что всего в колоде 52 карты.
 -}
 
-data Suit
-
-data Value
-
-data Card = Card Value Suit
+data Suit = Spades | Clubs | Diamonds | Hearts
+   deriving (Show, Eq, Ord)
+data Value = Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King | Ace
+    deriving (Show, Eq, Ord)
+type Card = (Value, Suit)
 
 -- 2. Определить функцию, проверяющую, что две переданные ей карты одной масти.
 
 sameSuit :: Card -> Card -> Bool
-sameSuit = undefined
+sameSuit (_,s1) (_,s2)= s1 ==s2
 
 {-
   3. Определить функцию, проверяющую, что переданная ей первой карта старше второй
@@ -25,7 +25,7 @@ sameSuit = undefined
 -}
 
 beats :: Card -> Card -> Ordering
-c1 `beats` c2 = undefined
+(c1,_) `beats` (c2,_) = compare c1 c2
 
 {-
   4. Определить функцию, которая по паре списков карт возвращает новую пару списков карт
@@ -37,8 +37,13 @@ c1 `beats` c2 = undefined
       раунда).
 -}
 
-game_round :: ([Card], [Card]) -> ([Card], [Card])
-game_round = undefined
+
+game_round cards = game_round_temp (cards, [])
+
+game_round_temp (((c1:list1_cards), (c2:list2_cards)), retur)
+    | beats c1 c2 == GT = (list1_cards ++ (c1:c2:retur), list2_cards)
+    | beats c1 c2 == LT = (list1_cards, list2_cards ++ (c1:c2:retur))
+    | otherwise = game_round_temp ((list1_cards, list2_cards), (c1:c2:retur))
 
 {-
   5. Определить функцию, которая по паре списков возвращает количество раундов, необходимых
