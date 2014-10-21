@@ -10,7 +10,8 @@
 import System.Environment
 
 createFile :: Int -> String -> FilePath -> IO ()
-createFile n s fname = undefined
+
+createFile n s fname = writeFile fname(unlines (replicate n s))
 
 main = do
   [n_str, text, fname] <- getArgs
