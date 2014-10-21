@@ -42,3 +42,10 @@ task_3 file  = do
      let (a1, a2) = foldl (\acc x -> max_ acc (read x)) (0, 0) (lines contents)
      print (a1, a2)
      hClose handle
+
+main = do
+	 [task,file] <- getArgs
+ 	 case task of
+          "1" -> task_1 file 10
+          "2" -> task_2 file
+          "3" -> task_3 file

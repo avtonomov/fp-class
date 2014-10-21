@@ -65,7 +65,6 @@ task_5 file len count  = do
      str <- return $ take count $ randomRs ('a','z') rand
      appendFile file (str++"\n")
      task_5 file (len - 1) count
+  else
+     return ()
 
-
-
-main = undefined
