@@ -9,6 +9,7 @@ import Data.List
 import qualified Data.Sequence as Seq
 import qualified Data.IntSet as Set
 import Data.Array.IArray
+import Data.Array.IArray as Iarray
 import System.Environment
 import Control.Monad
 
@@ -16,13 +17,13 @@ nub_set :: Set.IntSet -> Int
 nub_set = Set.size
 
 nub_list :: [Int] -> Int
-nub_list = undefined
+nub_list = length 
 
 nub_seq :: Seq.Seq a -> Int
 nub_seq = undefined
 
 nub_arr :: Array Int Int -> Int
-nub_arr = undefined
+nub_arr (xs) = length $ Iarray.elems xs
 
 main = do
   [fname] <- getArgs
