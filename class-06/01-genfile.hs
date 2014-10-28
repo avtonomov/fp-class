@@ -16,3 +16,4 @@ createFile n s fname = writeFile fname(unlines (replicate n s))
 main = do
   [n_str, text, fname] <- getArgs
   createFile (read n_str) text fname
+  hClose handle

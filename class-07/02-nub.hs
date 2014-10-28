@@ -11,18 +11,21 @@ import qualified Data.IntSet as Set
 import Data.Array.IArray
 import System.Environment
 import Control.Monad
+import Data.Array.IArray as Arr
+
+
 
 nub_set :: Set.IntSet -> Int
 nub_set = Set.size
 
 nub_list :: [Int] -> Int
-nub_list = undefined
+nub_list = length
 
 nub_seq :: Seq.Seq a -> Int
 nub_seq = undefined
 
 nub_arr :: Array Int Int -> Int
-nub_arr = undefined
+nub_arr xs = length $ Arr.elems xs
 
 main = do
   [fname] <- getArgs
