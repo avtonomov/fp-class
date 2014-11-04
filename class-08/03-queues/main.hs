@@ -1,6 +1,8 @@
 import AbstractQueue
 import qualified Queue as Q
 import qualified FastQueue as FQ
+import System.Environment
+import System.Random
 
 checkQueue :: (AbstractQueue q, Num a, Eq a) => q a -> Bool
 checkQueue q = lastElem (enqueue q 5) == 5
