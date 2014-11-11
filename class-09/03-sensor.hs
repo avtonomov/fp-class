@@ -1,5 +1,12 @@
 import System.Environment
 import Data.Monoid
+import Data.Maybe
+
+import Control.Applicative
+import System.Random
+import System.IO
+import System.Directory
+import Data.Char
 
 {-
   Некоторый датчик генерирует по пять сигналов в сутки, часть из которых
@@ -14,13 +21,18 @@ type SensorData = [SensorValue]
 {- Напишите функцию, которая преобразует прочитанную из файла строку в список
    значений, полученных от датчика. -}
 
+
+
 getData :: String -> SensorData
-getData = undefined . lines
+getData = fmap (\x -> if x=="-" then Nothing else Just (read x)) . lines
 
 {- Напишите функцию, группирующую данные по суткам. -}
 
 dataByDay :: SensorData -> [SensorData]
-dataByDay = undefined
+dataByDay [] = []
+dataByDay xs = (take 5 xs): dataByDay (drop 5 xs)
+
+
 
 {-
   Посчитайте минимальное значение среди показаний датчика,
@@ -36,7 +48,14 @@ dataByDay = undefined
 -}
 
 minData1 :: Bool -> [SensorData] -> Int
-minData1 needFirst = minimum . undefined
+minData1 needFirst xs 
+   |needFirst ==True = fromJust $ foldl1 minApp $ map (getFirst . mconcat . map First) xs
+   |otherwise = fromJust $ foldl1 maxApp2 $ map (getLast . mconcat . map Last) xs
+
+
+maxApp2 a b= max <$> a <*> b 
+minApp a b= min <$> a <*> b 
+
 
 {-
   Посчитайте минимальное значение среди данных,
@@ -49,17 +68,26 @@ minData1 needFirst = minimum . undefined
   Указание: в решении следует пользоваться возможностями моноидов Sum, Product
   и Maybe a, где a — моноид, при этом должна быть написана одна функция, отвечающая
   на вопрос а) или б) в зависимости от значения логического параметра.
+
+   
+
 -}
 
 minData2 :: Bool -> [SensorData] -> Int
-minData2 needSum = minimum . undefined
+minData2 needSum  xs
+   |needSum ==True = minimum $ map (getSum . mconcat . map (Sum . fromJust) . filter isJust) xs
+   |otherwise = minimum $ map (getProduct . mconcat . map (Product . fromJust) . filter isJust) xs
+
 
 {- Попробуйте объединить две предыдущие функции в одну. -}
 
 data SensorTask = NeedFirst | NeedLast | NeedSum | NeedProduct
 
 minData :: SensorTask -> [SensorData] -> Int
-minData st = minimum . undefined
+minData NeedFirst xs = minData1 True xs
+minData NeedLast xs = minData1 False xs
+minData NeedSum xs = minData2 True xs
+minData NeedProduct xs = minData2 False xs 
 
 {-
   Пользуясь моноидами All, Any и любыми другими, выясните следующую информацию:
@@ -77,4 +105,5 @@ minData st = minimum . undefined
 main = do
   fname <- head `fmap` getArgs
   sData <- getData `fmap` readFile fname
-  undefined
+  print $ minData1 True $dataByDay sData
+  print $ minData2 True $dataByDay sData
