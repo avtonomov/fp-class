@@ -1,4 +1,5 @@
 import System.Environment
+import System.Random
 
 {-
   Напишите функцию reduce, принимающую один целочисленный аргумент a и возвращающую 0,
@@ -7,7 +8,10 @@ import System.Environment
 -}
 
 reduce :: Integral a => a -> a
-reduce = undefined
+reduce a
+  |mod a 3 ==0 = 0
+  |mod a 3 /=0 && odd a = a^2
+  |otherwise = a^3
 
 {-
   Напишите функцию, применяющую функцию reduce заданное количество раз к значению в контексте,
@@ -15,25 +19,30 @@ reduce = undefined
 -}
 
 reduceNF :: (Functor f, Integral a) => Int -> f a -> f a
-reduceNF = undefined
-
+reduceNF 0 a= a
+reduceNF n a = reduceNF (n-1)  (fmap (reduce) a)
 {-
   Реализуйте следующие функции-преобразователи произвольным, но, желательно, осмысленным и
   нетривиальным способом.
 -}
 
 toList :: Integral a => [(a, a)]  -> [a]
-toList = undefined
+toList = foldr (\(x,y) acc -> x^y : acc) []
 
 toMaybe :: Integral a => [(a, a)]  -> Maybe a
-toMaybe = undefined
+toMaybe []= Nothing
+toMaybe xs = Just (sum $ take 5 $ toList (xs))
+
 
 toEither :: Integral a => [(a, a)]  -> Either String a
-toEither = undefined
+toEither [] = Left("empty")
+toEither xs = Right (head $reverse $ toList (xs))
+
 
 -- воспользуйтесь в этой функции случайными числами
 toIO :: Integral a => [(a, a)]  -> IO a
-toIO = undefined
+toIO  xs = undefined
+    
 
 {-
   В параметрах командной строки задано имя текстового файла, в каждой строке
@@ -45,19 +54,34 @@ toIO = undefined
 -}
 
 parseArgs :: [String] -> (FilePath, Int)
-parseArgs = undefined
+parseArgs (a:b:_) =(a,read b) 
+
+
+
 
 readData :: FilePath -> IO [(Int, Int)]
-readData = undefined
+readData fname = do
+    text <- readFile fname
+    return $ map ((\(a:b:xs) -> (read a , read b )) . words)  (lines $ text)
+
 
 main = do
   (fname, n) <- parseArgs `fmap` getArgs
   ps <- readData fname
-  undefined
+  print $ reduceNF n (toList ps)
+  print $ reduceNF n (toMaybe ps)
   print $ reduceNF n (toEither ps)
   reduceNF n (toIO ps) >>= print
 
 {-
   Подготовьте несколько тестовых файлов, демонстрирующих особенности различных контекстов.
   Скопируйте сюда результаты вызова программы на этих файлах.
+
+
+
+*Main> :main "aa.txt" 1
+[1,0,244140625]
+Just 1
+Right 1
+*** Exception: Prelude.undefined
 -}
