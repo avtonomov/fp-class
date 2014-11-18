@@ -19,7 +19,7 @@ nfa_ex = (['0','1'], [1, 2], 1, tf, [2])
 
 -- Напишите функцию, определяющую, корректно ли задан НКА
 isCorrect :: NFA -> Bool
-isCorrect = undefined
+isCorrect (a,s,i,t,acc)= (not (null a)) && (not (null s)) && (not (null acc)) && (elem i s)
 
 -- в дальнейшем может пригодиться функция whileM,
 -- которая собирает результаты в список, пока истинно
@@ -32,14 +32,44 @@ accept :: NFA -> String -> Bool
 accept = undefined
 
 -- Постройте ещё как минимум три примера НКА
+--abab...
 nfa1 :: NFA
-nfa1 = undefined
-
+nfa1 = (['a','b'], [1, 2, 3], 1, trans, [3])
+ where
+    trans 1 'a' = [2]
+    trans 1 _ = []
+    trans 2 'b' = [3]
+    trans 2 _ = []
+    trans 3 'a' = [1]
+    trans 3 _ = []
+    
+---a*b*c    
 nfa2 :: NFA
-nfa2 = undefined
-
+nfa2 = (['a','b','c'], [1, 2, 3], 1, trans, [3])
+ where
+    trans 1 'a' = [1]
+    trans 1 'b' = [2]
+    trans 1 _ = []
+    trans 2 'b' = [2]
+    trans 2 'c' = [3]
+    trans 2 _ = []
+    trans 3 'c' = []
+    trans 3 _ = [1]
+--ba(c)*ab
 nfa3 :: NFA
-nfa3 = undefined
+nfa3= (['a','b','c'], [1, 2, 3,4,5], 1, trans, [5])
+ where
+    trans 1 'b' = [2]
+    trans 1 _ = []
+    trans 2 'a' = [3]
+    trans 2 _ = []
+    trans 3 'c' = [3]
+    trans 3 'a' = [4]
+    trans 3 'b' = []
+    trans 4 'b' = [5]
+    trans 4 _ = []
+    trans 5 'b' = []
+    trans 5 _ = [1]
 
 {-
   Распределите заданные строки в соответствии с распознающими
