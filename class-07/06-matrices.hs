@@ -17,3 +17,8 @@
 
    Параметром командной строки должно быть имя файла со сценарием указанного или подобного ему вида.
 -}
+
+
+read_matr file = do
+   handle <- openFile file ReadMode
+   contents <- readFile file
