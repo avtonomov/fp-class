@@ -25,23 +25,53 @@ type Pole = (Birds, Birds)
 
 balance = 3
 
-updatePole :: Pole -> Maybe Pole
-updatePole p = if unbalanced p then Nothing else Just p
-  where
-    unbalanced (l, r) = abs (l - r) > balance
 
-landLeft :: Birds -> Pole -> Maybe Pole
+updatePole :: Pole -> Either String Pole
+updatePole (l,r)
+  |(unbalanced (l,r)) && l>r = Left ("Left")
+  |(unbalanced (l,r)) && l<r = Left ("Right")
+  |otherwise = Right(l,r)
+
+unbalanced (l, r) = abs (l - r) > balance
+
+landLeft :: Birds -> Pole -> Either String Pole
 landLeft n (left, right) = updatePole (left + n, right)
 
-landRight :: Birds -> Pole -> Maybe Pole
+landRight :: Birds -> Pole -> Either String Pole
 landRight n (left, right) = updatePole (left, right + n)
 
-banana :: Pole -> Maybe Pole
-banana = const Nothing
+landBoth :: Birds -> Pole -> Either String Pole
+landBoth n (left, right) = updatePole (left+n, right + n)
+
+
+unlandAll  = const (Right (0, 0))
+
+
+banana = const $ Left "banana!!!!"
+
+
+
+read_file fname = (map (read_item . words) . lines) `liftM` (readFile "02.txt")
+
+
+read_item [x,y]
+ | x == "M" = landBoth $ read y
+ | x == "L" = landLeft $ read y
+ | x == "R" = landRight $ read y
+ | x == "B" = banana
+ | x == "U" = unlandAll
+
+
+run fname = read_file  fname 
+
+
+
 
 tests = all test [1..3]
   where
     test 1 = (return (0, 0) >>= landLeft 1 >>= landRight 4 
-              >>= landLeft (-1) >>= landRight (-2)) == Nothing
-    test 2 = (return (0, 0) >>= landRight 2 >>= landLeft 2 >>= landRight 2) == Just (2, 4)
-    test 3 = (return (0, 0) >>= landLeft 1 >>= banana >>= landRight 1) == Nothing
+              >>= landLeft (-1) >>= landRight (-2)) == Left "Right"
+    test 2 = (return (0, 0) >>= landRight 2 >>= landLeft 2 >>= landRight 2) == Right (2, 4)
+    test 3 = (return (0, 0) >>= landLeft 1 >>= banana >>= landRight 1) == Left "banana!!!!"
+
+
