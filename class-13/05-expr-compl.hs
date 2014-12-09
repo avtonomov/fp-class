@@ -1,8 +1,11 @@
 import Parser
 import SimpleParsers
 import ParseNumbers
-import Control.Applicative hiding (many, optional)
+import Data.Maybe
 import Control.Monad
+import Control.Applicative hiding (many, optional)
+import Data.Char
+
 
 {-
    Добавьте поддержку вещественных и комплексных чисел из второго упражнения.
@@ -11,7 +14,7 @@ import Control.Monad
    проанализировать).
 -}
 
-data Expr = Con Int | Bin Op Expr Expr
+data Expr = Con (Float, Float) | Bin Op Expr Expr
   deriving Show
 data Op = Plus | Minus | Mul | Div
   deriving Show
@@ -24,6 +27,24 @@ addop  ::= '+' | '-'
 mulop  ::= '*' | '/'
 -}
 
+complex_float = complex <|> (toComplex `liftM` float)
+toComplex a = (a, 0)
+
+complex = bracket "("")" $ (,) <$> float <*> (char ',' >> (token float))		
+		
+float = (*) <$> sign <*> (number <|> fromIntegral <$> natural)
+  where
+    number = do
+      a <- natural
+      char '.'
+      b <- natural
+      return $ fromIntegral a + (fromIntegral b / 10 ^ length_new b)
+		
+sign = (char '-' >> return (-1)) <|> return 1
+length_new 0 = 0
+length_new x = 1 + length_new (div x 10)
+
+		
 expr = token (term >>= rest addop term)
   where
     rest op unit e1 = optional e1 $ do 
@@ -37,6 +58,6 @@ expr = token (term >>= rest addop term)
     binop (s1, cons1) (s2, cons2) =
           (symbol s1 >> return cons1) <|>
           (symbol s2 >> return cons2)
-    constant = Con `liftM` natural
+    constant = Con `liftM` complex_float
 
 
